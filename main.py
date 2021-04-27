@@ -5,6 +5,7 @@ import random
 from colors import *
 from win32api import GetSystemMetrics
 import numpy
+import pygame
 
 #import algorithms
 from Algorithms.BubbleSort import BubbleSort
@@ -14,6 +15,7 @@ from Algorithms.MergeSort import MergeSort
 from Algorithms.QuickSort import QuickSort
 from Algorithms.HeapSort import HeapSort
 from Algorithms.CountingSort import CountingSort
+from Algorithms.PathFinding import *
 
 global temp
 #window
@@ -34,12 +36,12 @@ type_list =['None','Sorting','Path Finding']
 algo_list = {
     "None":['None'],
     "Sorting" : ['None','Bubble Sort','Merge Sort','Selection Sort','Insertion Sort','Quick Sort','Heap Sort','Counting Sort'],
-    "Path Finding" : ['None']
+    "Path Finding" : ['None',"Breadth-First Search","Depth-First Search","Dijkstra's Algorithm","A*"]
 }
 
 coordinate_list = {
-    'x' : [int(x) for x in range(-GetSystemMetrics(0)-1//2,GetSystemMetrics(0)//2)],
-    'y' : [int(x) for x in range(-GetSystemMetrics(1)-1//2,GetSystemMetrics(1)//2)]
+    'x' : [int(x) for x in range(0,101)],
+    'y' : [int(x) for x in range(0,101)]
 }
 speed_list = ['None','Fast', 'Medium', 'Slow']
 
@@ -78,10 +80,8 @@ def set_speed():
         return 0.001
 
 def find_path():
-    pass
-
-def draw_path():
-    pass
+    canvas.delete("all")
+    Find_Path(x_start.get(), y_start.get(), x_end.get(), y_end.get(), algorithm_name.get())
 
 def sort():
     timeTick = set_speed()
@@ -109,13 +109,18 @@ def additional_buttons():
     if algorithm_type.get() == "Sorting":
         #if type is sorting
         #button for sort command
+        try:
+            remove_level_2()
+        except:
+            pass
+        #button for sort command
         global button1
         button1 = Button(UI_frame, text="Sort", command=sort, bg=DARK_BLUE, fg = "white")
-        button1.grid(row=5, column=1, padx=5, pady=5)
+        button1.grid(row=3, column=1, padx=5, pady=5)
         #button for generating array
         global button3
         button3 = Button(UI_frame, text="Generate Array", command=generate, bg=DARK_BLUE, fg = "white")
-        button3.grid(row=5, column=0, padx=5, pady=5)
+        button3.grid(row=3, column=0, padx=5, pady=5)
 
     elif algorithm_type.get() == "Path Finding":
         try:
@@ -124,33 +129,48 @@ def additional_buttons():
         except:
             pass
 
+        global label3
         label3 = Label(UI_frame, text="Starting Coordinates (x,y):", bg=WHITE)
         label3.grid(row=3, column=0, padx=10, pady=5, sticky=W)
 
+        global x_s
         x_s = ttk.Combobox(UI_frame, textvariable = x_start, values = coordinate_list['x'])
         x_s.grid(row=3, column = 1, padx= 10, pady = 5, sticky = W)
         x_s.current(0)
 
+        global y_s
         y_s = ttk.Combobox(UI_frame, textvariable = y_start, values = coordinate_list['y'])
         y_s.grid(row=3, column = 2, padx= 10, pady = 5, sticky = W)
         y_s.current(0)
 
+        global label4
         label4 = Label(UI_frame, text="End Coordinates (x,y):", bg=WHITE)
         label4.grid(row=4, column=0, padx=10, pady=5, sticky=W)
 
+        global x_e
         x_e = ttk.Combobox(UI_frame, textvariable = x_end, values = coordinate_list['x'])
         x_e.grid(row=4, column = 1, padx= 10, pady = 5, sticky = W)
         x_e.current(0)
 
+        global y_e
         y_e = ttk.Combobox(UI_frame, textvariable = y_end, values = coordinate_list['y'])
         y_e.grid(row=4, column = 2, padx= 10, pady = 5, sticky = W)
         y_e.current(0)
 
+        global button5
         button5 = Button(UI_frame, text="Find Path", command=find_path, bg=DARK_BLUE, fg = "white")
         button5.grid(row=4, column=3, padx=5, pady=5)
     else:
         pass
 
+def remove_level_2():
+    button5.grid_remove()
+    y_e.grid_remove()
+    x_e.grid_remove()
+    y_s.grid_remove()
+    x_s.grid_remove()
+    label3.grid_remove()
+    label4.grid_remove()
 
 UI_frame = Frame(window, width= GetSystemMetrics(0), height=GetSystemMetrics(1)/3, bg=WHITE)
 UI_frame.grid(row=0, column=0, padx=10, pady=5)
@@ -176,6 +196,7 @@ speed_menu = ttk.Combobox(UI_frame, textvariable=speed_name, values=speed_list)
 speed_menu.grid(row=2, column=1, padx=5, pady=5)
 speed_menu.current(0)
 
+#drawing area
 canvas = Canvas(window, width=GetSystemMetrics(0), height=2*GetSystemMetrics(1)/3, bg=WHITE)
 canvas.grid(row=4, column=0, padx=10, pady=5)
 
