@@ -236,9 +236,7 @@ def Find_Path(x_start, y_start, x_end, y_end, algorithm_name):
                     if map.enabled:
                         if event.key == pygame.K_RETURN:
                             map.find_route(window)
-                        if event.key == pygame.K_RIGHT or event.key == pygame.K_UP:
-                            algo_index += 1
-                        if event.key == pygame.K_p:
+                        if event.key == pygame.K_m:
                             map.auto_generate()
                         if event.key == pygame.K_ESCAPE:
                             exit()
